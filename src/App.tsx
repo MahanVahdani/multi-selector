@@ -14,7 +14,15 @@ function App() {
   ];
 
   return (
-    <div style={{ padding: 40 }}>
+    <div
+      style={{
+        padding: 40,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <h1>Lobox Multi-Select</h1>
       <MultiSelect
         options={allOptions}
