@@ -1,30 +1,60 @@
-import React, { useState, useRef } from "react";
+import {
+  useState,
+  useRef,
+  Dispatch,
+  SetStateAction,
+  KeyboardEvent,
+  RefObject,
+} from "react";
 import { useClickOutside } from "./useClickOutside.hook";
 import { Option } from "./MultiSelect.component";
 
-const useMuiSelect = ({ selected, options, onChange }: any) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
+interface UseMuiSelectProps {
+  options: Option[];
+  selected: Option[];
+  onChange: (items: Option[]) => void;
+}
 
+export interface UseMuiSelectReturn {
+  containerRef: RefObject<HTMLDivElement | null>;
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
+  filtered: Option[];
+  toggleOption: (opt: Option) => void;
+  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+}
+
+const useMuiSelect = ({
+  options,
+  selected,
+  onChange,
+}: UseMuiSelectProps): UseMuiSelectReturn => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(containerRef, () => setIsOpen(false));
 
-  const filtered = options.filter((o) =>
+  const filtered: Option[] = options.filter((o) =>
     o.label.toLowerCase().includes(search.toLowerCase())
   );
 
-  const toggleOption = (opt: Option) => {
-    const already = selected.some((s) => s.id === opt.id);
-    if (already) {
+  const toggleOption = (opt: Option): void => {
+    const alreadySelected = selected.some((s) => s.id === opt.id);
+
+    if (alreadySelected) {
       onChange(selected.filter((s) => s.id !== opt.id));
     } else {
       onChange([...selected, opt]);
     }
+
     setSearch("");
     setIsOpen(true);
   };
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter" && search.trim()) {
       e.preventDefault();
       setIsOpen(true);
@@ -37,9 +67,9 @@ const useMuiSelect = ({ selected, options, onChange }: any) => {
     setIsOpen,
     search,
     setSearch,
-    onKeyDown,
     filtered,
     toggleOption,
+    onKeyDown,
   };
 };
 

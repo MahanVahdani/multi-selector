@@ -1,16 +1,16 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import styles from "./MultiSelect.module.scss";
-import { useClickOutside } from "./useClickOutside.hook";
 import { ReactComponent as ChevronDown } from "../../assets/chevron-down.svg";
 import { ReactComponent as ChevronUp } from "../../assets/chevron-up.svg";
 import { ReactComponent as CheckMark } from "../../assets/check-mark.svg";
+import useMuiSelect, { UseMuiSelectReturn } from "./useMuiSelect.hook";
 
 export interface Option {
   id: string;
   label: string;
 }
 
-interface MultiSelectProps {
+export interface MultiSelectProps {
   options: Option[];
   selected: Option[];
   onChange: (items: Option[]) => void;
@@ -23,33 +23,16 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   placeholder = "Select…",
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(containerRef, () => setIsOpen(false));
-
-  const filtered = options.filter((o) =>
-    o.label.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const toggleOption = (opt: Option) => {
-    const already = selected.some((s) => s.id === opt.id);
-    if (already) {
-      onChange(selected.filter((s) => s.id !== opt.id));
-    } else {
-      onChange([...selected, opt]);
-    }
-    setSearch("");
-    setIsOpen(true);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && search.trim()) {
-      e.preventDefault();
-      setIsOpen(true);
-    }
-  };
+  const {
+    containerRef,
+    isOpen,
+    setIsOpen,
+    search,
+    setSearch,
+    onKeyDown,
+    filtered,
+    toggleOption,
+  }: UseMuiSelectReturn = useMuiSelect({ options, selected, onChange });
 
   return (
     <div
@@ -64,11 +47,11 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
             {item.label}
             <button
               type="button"
+              className={styles.removeBtn}
               onClick={(e) => {
                 e.stopPropagation();
                 onChange(selected.filter((s) => s.id !== item.id));
               }}
-              className={styles.removeBtn}
             >
               ×
             </button>
