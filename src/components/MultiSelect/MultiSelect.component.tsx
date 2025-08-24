@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import styles from "./MultiSelect.module.scss";
 import { useClickOutside } from "./useClickOutside.hook";
 
-interface Option {
+export interface Option {
   id: string;
   label: string;
 }
