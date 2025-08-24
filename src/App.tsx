@@ -7,11 +7,6 @@ import "./App.css";
 
 function App() {
   const [selected, setSelected] = useState<Option[]>([]);
-  const allOptions: Option[] = [
-    { id: "edu", label: "Education 🎓" },
-    { id: "sci", label: "Yeeeah, science! 🧪" },
-    { id: "art", label: "Art 🤘" },
-  ];
 
   return (
     <div
@@ -23,7 +18,7 @@ function App() {
         alignItems: "center",
       }}
     >
-      <h1>Lobox Multi-Select</h1>
+      <h1>Multi-Select</h1>
       <MultiSelect
         options={allOptions}
         selected={selected}
@@ -35,3 +30,26 @@ function App() {
 }
 
 export default App;
+
+const allOptions: Option[] = [
+  { id: "edu", label: "Education 🎓" },
+  { id: "sci", label: "Science 🧪" },
+  { id: "art", label: "Art 🤘" },
+  { id: "mus", label: "Music 🎵" },
+  { id: "tech", label: "Technology 💻" },
+  { id: "sport", label: "Sports 🏀" },
+  { id: "travel", label: "Travel ✈️" },
+  { id: "food", label: "Food 🍔" },
+  { id: "gaming", label: "Gaming 🎮" },
+  { id: "health", label: "Health 🏥" },
+  { id: "finance", label: "Finance 💰" },
+  { id: "fashion", label: "Fashion 👗" },
+  { id: "literature", label: "Literature 📚" },
+  { id: "history", label: "History 📜" },
+  { id: "nature", label: "Nature 🌳" },
+  { id: "movies", label: "Movies 🎬" },
+  { id: "photography", label: "Photography 📷" },
+  { id: "fitness", label: "Fitness 🏋️‍♂️" },
+  { id: "cooking", label: "Cooking 🍳" },
+  { id: "programming", label: "Programming 👨‍💻" },
+];
