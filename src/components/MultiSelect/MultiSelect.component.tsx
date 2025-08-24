@@ -1,6 +1,9 @@
 import React, { useState, useRef } from "react";
 import styles from "./MultiSelect.module.scss";
 import { useClickOutside } from "./useClickOutside.hook";
+import { ReactComponent as ChevronDown } from "../../assets/chevron-down.svg";
+import { ReactComponent as ChevronUp } from "../../assets/chevron-up.svg";
+import { ReactComponent as CheckMark } from "../../assets/check-mark.svg";
 
 export interface Option {
   id: string;
@@ -26,30 +29,33 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
   useClickOutside(containerRef, () => setIsOpen(false));
 
-  const filtered = options.filter(
-    (o) =>
-      o.label.toLowerCase().includes(search.toLowerCase()) &&
-      !selected.some((s) => s.id === o.id)
+  const filtered = options.filter((o) =>
+    o.label.toLowerCase().includes(search.toLowerCase())
   );
 
-  const addNewOption = () => {
-    const newOpt = { id: crypto.randomUUID(), label: search };
-    onChange([...selected, newOpt]);
+  const toggleOption = (opt: Option) => {
+    const already = selected.some((s) => s.id === opt.id);
+    if (already) {
+      onChange(selected.filter((s) => s.id !== opt.id));
+    } else {
+      onChange([...selected, opt]);
+    }
     setSearch("");
+    setIsOpen(true);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && search.trim()) {
       e.preventDefault();
-      addNewOption();
       setIsOpen(true);
     }
   };
 
   return (
     <div
-      className={styles.multiSelect}
       ref={containerRef}
+      className={styles.multiSelect}
+      data-open={isOpen}
       onClick={() => setIsOpen(true)}
     >
       <div className={styles.tags}>
@@ -76,26 +82,41 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           placeholder={selected.length === 0 ? placeholder : ""}
         />
       </div>
+
+      <span
+        className={styles.chevron}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen((o) => !o);
+        }}
+      >
+        {isOpen ? <ChevronUp /> : <ChevronDown />}
+      </span>
+
       {isOpen && (
         <ul className={styles.dropdown}>
-          {filtered.map((o) => (
-            <li
-              key={o.id}
-              className={styles.option}
-              onClick={() => {
-                onChange([...selected, o]);
-                setSearch("");
-                setIsOpen(true);
-              }}
-            >
-              {o.label}
-            </li>
-          ))}
-          {search && !options.some((o) => o.label === search) && (
-            <li className={styles.newOption} onClick={addNewOption}>
-              Add "{search}"
-            </li>
-          )}
+          {filtered.map((o) => {
+            const isSelected = selected.some((s) => s.id === o.id);
+            return (
+              <li
+                key={o.id}
+                className={[
+                  styles.option,
+                  isSelected ? styles.isSelected : null,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => toggleOption(o)}
+              >
+                <span>{o.label}</span>
+                {isSelected && (
+                  <span className={styles.checkIcon}>
+                    <CheckMark />
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
