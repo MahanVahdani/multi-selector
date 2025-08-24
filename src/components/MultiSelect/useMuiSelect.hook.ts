@@ -1,6 +1,8 @@
 import {
   useState,
   useRef,
+  useCallback,
+  useMemo,
   Dispatch,
   SetStateAction,
   KeyboardEvent,
@@ -34,32 +36,45 @@ const useMuiSelect = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
 
+  // ref for click-outside detection
   const containerRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(containerRef, () => setIsOpen(false));
 
-  const filtered: Option[] = options.filter((o) =>
-    o.label.toLowerCase().includes(search.toLowerCase())
+  // memoize filter to avoid recomputing on every render
+  const filtered = useMemo<Option[]>(
+    () =>
+      options.filter((o) =>
+        o.label.toLowerCase().includes(search.toLowerCase())
+      ),
+    [options, search]
   );
 
-  const toggleOption = (opt: Option): void => {
-    const alreadySelected = selected.some((s) => s.id === opt.id);
-
-    if (alreadySelected) {
-      onChange(selected.filter((s) => s.id !== opt.id));
-    } else {
-      onChange([...selected, opt]);
-    }
-
-    setSearch("");
-    setIsOpen(true);
-  };
-
-  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === "Enter" && search.trim()) {
-      e.preventDefault();
+  // stable callback to toggle select / deselect
+  const toggleOption = useCallback(
+    (opt: Option) => {
+      const already = selected.some((s) => s.id === opt.id);
+      if (already) {
+        onChange(selected.filter((s) => s.id !== opt.id));
+      } else {
+        onChange([...selected, opt]);
+      }
+      // clear search and re-open dropdown
+      setSearch("");
       setIsOpen(true);
-    }
-  };
+    },
+    [onChange, selected]
+  );
+
+  // stable keyboard handler for Enter key
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && search.trim() !== "") {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    },
+    [search]
+  );
 
   return {
     containerRef,
