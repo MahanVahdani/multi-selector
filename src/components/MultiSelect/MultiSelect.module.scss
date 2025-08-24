@@ -4,7 +4,7 @@ $ms-grey: #666;
 $ms-light-grey: #ccc;
 $ms-tag-bg: #e0e0e0;
 $ms-hover-bg: rgba($ms-primary, 0.08);
-$ms-dropdown-shadow: 0 0 13px rgba(61, 61, 61, 0.58);
+$ms-dropdown-shadow: 0 0 5px rgba(61, 61, 61, 0.202);
 $ms-border-radius: 10px;
 $ms-tag-radius: 7px;
 
@@ -31,6 +31,8 @@ $ms-tag-radius: 7px;
     border: 1px solid $ms-light-grey;
     border-radius: $ms-border-radius;
     cursor: text;
+    max-height: 100px;
+    overflow-y: auto;
   }
 
   .tag {
